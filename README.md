@@ -1,24 +1,33 @@
-# meetup-app
+# photoWalks
+
+...I am currently creating and working on this app...
+
+The app is to connect photographers by allowing users to create meetups around the world
 
 ## Project setup
+
 ```
 npm install
 ```
 
 ### Compiles and hot-reloads for development
+
 ```
 npm run serve
 ```
 
 ### Compiles and minifies for production
+
 ```
 npm run build
 ```
 
 ### Lints and fixes files
+
 ```
 npm run lint
 ```
 
 ### Customize configuration
+
 See [Configuration Reference](https://cli.vuejs.org/config/).
