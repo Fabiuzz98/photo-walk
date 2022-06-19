@@ -1,12 +1,49 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import Home from '../components/homePage.vue';
+import createMeetup from '../components/meetup/createMeetup.vue';
+import meetupList from '@/components/meetup/meetupList.vue';
+import meetupDetail from '@/components/meetup/meetupDetail.vue';
+import profile from '../components/user/profilePage.vue';
+import signUp from '../components/user/signUp.vue';
+import signIn from '../components/user/signIn.vue';
 
 Vue.use(VueRouter);
 
-const routes = [];
-
 const router = new VueRouter({
-  routes,
+  routes: [
+    {
+      path: '/',
+      component: Home,
+    },
+    {
+      path: '/create-new-meetup',
+      component: createMeetup,
+    },
+    {
+      path: '/meetup/:id',
+      component: meetupDetail,
+    },
+    {
+      path: '/meetup-list',
+      component: meetupList,
+    },
+
+    {
+      path: '/profile',
+      component: profile,
+    },
+    {
+      path: '/signup',
+      component: signUp,
+    },
+    {
+      path: '/signin',
+      component: signIn,
+    },
+  ],
+
+  mode: 'history',
 });
 
 export default router;
