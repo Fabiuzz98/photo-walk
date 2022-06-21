@@ -14,6 +14,10 @@ const router = new VueRouter({
   routes: [
     {
       path: '/',
+      redirect: '/home',
+    },
+    {
+      path: '/home',
       component: Home,
     },
     {
@@ -23,6 +27,7 @@ const router = new VueRouter({
     {
       path: '/meetup/:id',
       component: meetupDetail,
+      props: true,
     },
     {
       path: '/meetup-list',

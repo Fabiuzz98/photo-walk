@@ -56,33 +56,21 @@
 <script>
 export default {
   data() {
-    return {
-      meetups: [
-        {
-          imageUrl:
-            'https://images.lonelyplanetitalia.it/static/places/new-york-city-319.jpg?q=90&p=social&s=cbcff5785dc288e0a7bd4edacbd6e9cc',
-          id: 1,
-          title: 'Meetup in New York',
-        },
-        {
-          imageUrl:
-            'https://www.visitberlin.de/system/files/styles/visitberlin_teaser_single_visitberlin_mobile_1x/private/image/iStock_000074120341_Double_DL_PPT_0.jpg?h=a66ba266&itok=34GoL64x',
-          id: 2,
-          title: 'Meetup in beliin',
-        },
-        {
-          imageUrl:
-            'https://res.cloudinary.com/hello-tickets/image/upload/c_limit,f_auto,q_auto,w_1920/v1612782123/a7kxstakrek6p7tarwh1.jpg',
-          id: 3,
-          title: 'Meetup in Paris',
-        },
-      ],
-    };
+    return {};
   },
 
   methods: {
     showMeetup(id) {
-      this.$router.replace('/meetup/' + id);
+      const path = `/meetup/${id}`;
+      if (this.$route.path !== path) this.$router.push(path);
+
+      // this.$router.replace('/meetup/' + id);
+    },
+  },
+
+  computed: {
+    meetups() {
+      return this.$store.getters.featuredMeetups;
     },
   },
 };
