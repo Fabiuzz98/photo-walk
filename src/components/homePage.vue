@@ -9,7 +9,7 @@
           'pr-5': $vuetify.breakpoint.mdAndUp,
         }"
       >
-        <v-btn large router to="/meetups" class="primary"
+        <v-btn large router to="/meetup-list" class="primary"
           >Explore meetups</v-btn
         >
       </v-flex>
@@ -28,7 +28,17 @@
       </v-flex>
     </v-layout>
 
-    <v-layout row wrap>
+    <v-layout v-if="isLoading" class="text-center mt-10">
+      <v-flex xs12>
+        <v-progress-circular
+          :size="70"
+          color="primary"
+          indeterminate
+        ></v-progress-circular>
+      </v-flex>
+    </v-layout>
+
+    <v-layout row wrap v-else>
       <v-flex xs12>
         <v-carousel style="cursor: pointer">
           <v-carousel-item
@@ -71,6 +81,10 @@ export default {
   computed: {
     meetups() {
       return this.$store.getters.featuredMeetups;
+    },
+
+    isLoading() {
+      return this.$store.getters.isLoading;
     },
   },
 };

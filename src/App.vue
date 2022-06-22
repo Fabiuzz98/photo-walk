@@ -25,6 +25,17 @@
             {{ item.title }}
           </v-btn>
         </v-toolbar-items>
+
+        <v-toolbar-items
+          v-if="!isUserAuthenticated"
+          @click="logout"
+          class="d-none d-md-flex"
+        >
+          <v-btn text>
+            <v-icon left>{{ 'mdi-logout' }}</v-icon>
+            Logout
+          </v-btn>
+        </v-toolbar-items>
       </v-toolbar>
     </v-card>
 
@@ -42,6 +53,12 @@
             {{ item.title }}
           </v-list-item-content>
         </v-list-item>
+        <v-list-item @click="logout" v-if="!isUserAuthenticated">
+          <v-list-item-action>
+            <v-icon>{{ 'mdi-logout' }}</v-icon>
+          </v-list-item-action>
+          <v-list-item-content> Logout </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
     <main>
@@ -55,22 +72,48 @@ export default {
   data() {
     return {
       sideNav: false,
-      menuItems: [
-        {
-          icon: 'mdi-account-supervisor',
-          title: 'View Meetups',
-          link: '/meetup-list',
-        },
-        {
-          icon: 'mdi-map-marker',
-          title: 'Organize Meetup',
-          link: '/create-new-meetup',
-        },
-        { icon: 'mdi-account', title: 'Profile', link: '/profile' },
+    };
+  },
+
+  methods: {
+    logout() {
+      this.$store.dispatch('logout');
+    },
+  },
+
+  computed: {
+    menuItems() {
+      let menuItems = [
         { icon: 'mdi-face-man', title: 'Sign Up', link: '/signup' },
         { icon: 'mdi-lock-open', title: 'Sign In', link: '/signin' },
-      ],
-    };
+      ];
+
+      if (!this.isUserAuthenticated) {
+        menuItems = [
+          {
+            icon: 'mdi-account-supervisor',
+            title: 'View Meetups',
+            link: '/meetup-list',
+          },
+          {
+            icon: 'mdi-map-marker',
+            title: 'Organize Meetup',
+            link: '/create-new-meetup',
+          },
+          { icon: 'mdi-account', title: 'Profile', link: '/profile' },
+        ];
+      }
+
+      return menuItems;
+    },
+
+    isUserAuthenticated() {
+      console.log(this.$store.getters.user);
+      return (
+        this.$store.getters.user === null ||
+        this.$store.getters.user === undefined
+      );
+    },
   },
 };
 </script>
