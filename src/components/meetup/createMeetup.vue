@@ -32,13 +32,11 @@
           </v-layout>
           <v-layout row>
             <v-flex xs12 sm6 offset-sm3>
-              <v-text-field
-                name="imageUrl"
-                label="Image URL"
-                id="image-url"
-                v-model="imageUrl"
-                required
-              ></v-text-field>
+              <v-file-input
+                accept="image/*"
+                label="File input"
+                @change="onFileChange"
+              ></v-file-input>
             </v-flex>
           </v-layout>
           <v-layout row>
@@ -99,6 +97,7 @@ export default {
       description: '',
       date: '',
       time: new Date(),
+      image: null,
     };
   },
   computed: {
@@ -127,6 +126,27 @@ export default {
     },
   },
   methods: {
+    onFileChange(event) {
+      const file = event; //Restituisce un oggetto con dentro i file caricati (nel nostro caso 1 solo file immagine)
+
+      let fileName = file.name; //Prendiamo il nome del file
+
+      //Questo if controlla se il . è l'ultimo elemento ed in caso lo fose vuol dire che il file non ha estensione (in quanto lastIndexOf parte a contare dalla fine della stringa del nome e se il risutlato e <= 0 allora vuol dire che l'ultimo elemento del file)
+      if (fileName.lastIndexOf('.') <= 0) {
+        return alert('Upload a valid image');
+      }
+
+      const fileReader = new FileReader();
+
+      //Questo ci serve per mettere la nostra img in formato base64 dentro imageUrl così da farne vedere una preview nel sito
+      fileReader.addEventListener('load', () => {
+        this.imageUrl = fileReader.result; //Il 'result' è la nostra img: base64 (ovvero testo)
+      });
+      fileReader.readAsDataURL(file); //Trasformiamo il file binario in una stringa
+
+      this.image = file;
+    },
+
     onCreateMeetup() {
       if (!this.formIsValid) {
         return;
@@ -134,7 +154,7 @@ export default {
       const meetupData = {
         title: this.title,
         location: this.location,
-        imageUrl: this.imageUrl,
+        image: this.image,
         description: this.description,
         date: this.submittableDateTime,
       };

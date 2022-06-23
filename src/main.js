@@ -22,7 +22,7 @@ new Vue({
       apiKey: 'AIzaSyDMlb373iwKHRJZ-oH-9M39i3UMSSK5gJ4',
       authDomain: 'photo-walks-bac89.firebaseapp.com',
       projectId: 'photo-walks-bac89',
-      storageBucket: 'photo-walks-bac89.appspot.com',
+      storageBucket: 'gs://photo-walks-bac89.appspot.com',
       databaseURL: 'https://photo-walks-bac89-default-rtdb.firebaseio.com/',
       messagingSenderId: '395447594497',
       appId: '1:395447594497:web:7a7c6444fc307c401e9a00',

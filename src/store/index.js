@@ -45,6 +45,24 @@ export default new Vuex.Store({
       state.loadedMeetups.push(payload);
     },
 
+    updateMeetup(state, payload) {
+      const meetup = state.loadedMeetups.find(meetup => {
+        return (meetup.id = payload.id);
+      });
+
+      if (payload.title) {
+        meetup.title = payload.title;
+      }
+
+      if (payload.description) {
+        meetup.description = payload.description;
+      }
+
+      if (payload.date) {
+        meetup.date = payload.date;
+      }
+    },
+
     setMeetups(state, payload) {
       state.loadedMeetups = payload;
     },
@@ -57,10 +75,12 @@ export default new Vuex.Store({
   actions: {
     async createMeetup(context, payload) {
       try {
+        let imageUrl;
+        let key;
+
         const meetup = {
           title: payload.title,
           location: payload.location,
-          imageUrl: payload.imageUrl,
           description: payload.description,
           date: payload.date.toISOString(),
           creatorId: context.state.user.id,
@@ -71,9 +91,40 @@ export default new Vuex.Store({
         //push() seve per aggiungere i dati al ref
         const response = await firebase.database().ref('meetups').push(meetup);
 
-        const key = response.key; //E' l'id con cui firebase salva ogni elemento(meetup) aggiunto al database
+        key = response.key; //E' l'id con cui firebase salva ogni elemento(meetup) aggiunto al database
 
-        context.commit('createMeetup', { ...meetup, id: key });
+        const fileName = payload.image.name; //Prendiamo il nome dell'immagine dall'oggetto passato nel payload
+        const extension = fileName.slice(fileName.lastIndexOf('.')); //Prendiamo così l'estensione del file (jpg, png ecc..)
+
+        //storage() serve per accedere allo storage di firebase e con ref() si specifica il nome di dove vogliamo salvarlo
+        //put() serve per inviare il tutto
+        /*Vogliamo salvare l'immagine dentro lo storage di firebase in meetups/ con poi la key con la quale firebase aveva salvato il singolo meetup seguita dalla sua 
+          estensione */
+        const fileData = await firebase
+          .storage()
+          .ref('meetups/' + key + '.' + extension)
+          .put(payload.image);
+
+        imageUrl = fileData.metadata.downloadURLs[0]; //Andiamo a prendere il link del file che abbiamo uploadato ed usiamo [0] perchè salviamo un immagine per meetup
+
+        console.log(imageUrl);
+
+        /* Andiamo ad aggiornare, e nel nostro caso creare, dentro la cartella meetups in firebase ---> a sua volta dentro il meetup singolo (grazie alla sua key presa
+          prima) un'altra key nell'oggetto chiamata imageUrl che conterrà il link dello slot di memoria dello storage in Firebase dove l'immagine è stata salvata
+         */
+        //child() si usa per andare a prendere il meetup specifico dentro all'array di oggetti meetups in Firebase
+        //update() serve per aggiornare un elemento all'interno del database ed in caso non esista, a crearlo come nel nostro caso che creerà una key con dentro il valore
+        firebase
+          .database()
+          .ref('meetups')
+          .child(key)
+          .update({ imageUrl: imageUrl });
+
+        context.commit('createMeetup', {
+          ...meetup,
+          id: key,
+          imageUrl: imageUrl,
+        }); //Andiamo finalmente ad aggiungere il meetup nel nostro array nel locale in state
       } catch (err) {
         console.log(err);
       }
@@ -110,6 +161,35 @@ export default new Vuex.Store({
         console.log(meetupsList);
 
         context.commit('setMeetups', meetupsList);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    async updateMeetupData(context, payload) {
+      try {
+        const updateObj = {};
+
+        //Solo in caso non siano vuoti le aggiorniamo
+        if (payload.title) {
+          updateObj.title = payload.title;
+        }
+
+        if (payload.description) {
+          updateObj.description = payload.description;
+        }
+
+        if (payload.date) {
+          updateObj.date = payload.date;
+        }
+
+        await firebase
+          .database()
+          .ref('meetups')
+          .child(payload.id)
+          .update(updateObj);
+
+        context.commit('updateMeetup', payload);
       } catch (err) {
         console.log(err);
       }
