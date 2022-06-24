@@ -66,7 +66,7 @@ export default new Vuex.Store({
     registeredUserForMeetup(state, payload) {
       const id = payload.id; //Sarebbe l'id del meetup passato da noi
       state.user.registeredMeetups.push(id); //Aggiungiamo all'array di ogni user gli id dei meetup ai quali si registrano
-      state.user.fbKeys[id] = payload.fbKey; //Così si crea un oggetto chiamato 'fbKeys che per ogni suo elemento avrà come "key" l'id del meetup al quale ci siamo registrati e come "value" la key assegnatta da Firebase
+      state.user.fbKeys[id] = payload.fbKey; //Così va dentro l'oggetto chiamato 'fbKeys al quale si assegna un elemento che avrà come "key" l'id del meetup al quale ci siamo registrati e come "value" la key assegnatta da Firebase
       console.log(state.user);
       console.log(state.user.fbKeys);
     },
@@ -316,6 +316,39 @@ export default new Vuex.Store({
         fbKeys: {},
         registeredMeetups: [],
       }); //passiamo l'id dell'user che ci restituisce la funzione onAuthStateChange()
+    },
+
+    //Questa funzione assegna alla nostra memoria locale i dati dell'utente presi dal db
+    async fetchUserData(context) {
+      try {
+        //Il risultato di data è il key value pairs con key il fbKey e value il mettupId
+        const data = await firebase
+          .database()
+          .ref('/users/' + context.getters.user.id + '/registration/')
+          .once('value');
+
+        if (data === null) return;
+
+        let registeredMeetups = [];
+        let swappedPairs = {};
+
+        const dataPairs = data.val();
+
+        for (const key in dataPairs) {
+          registeredMeetups.push(dataPairs[key]); //Aggiungiamo tutti i mettup al quale l'utente si è registrato
+          swappedPairs[dataPairs[key]] = key; //si aggiunge all'oggetto swappedPairs--> dataPairs[key] si riferisce al value dell'oggetto che è il meetupId e lo si mette uguale alla key che sarebbe la fbKey
+        }
+
+        const updatedUser = {
+          id: context.getters.user.id,
+          registeredMeetups: registeredMeetups,
+          fbKeys: swappedPairs,
+        };
+
+        context.commit('setUser', updatedUser);
+      } catch (err) {
+        console.log(err);
+      }
     },
 
     logout(context) {

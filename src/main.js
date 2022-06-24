@@ -31,10 +31,11 @@ new Vue({
     this.$store.dispatch('loadMeetups'); //Carichiamo la lista di meetup dal database alla creazione del sito
 
     //Al cambiamento del token dentro local storage, onAuthStateChanged() si attiva ed al suo interno prende un valore, l'utente. Quindi ogni volta che ci logghiamo o
-    //creiamo un account, automaticamente questa funzion epercepisce che c'è un token dentro al local Storage ed esegue quello che noi gli diciamo al suo interno
+    //creiamo un account, automaticamente questa funzione percepisce che c'è un token dentro al local Storage ed esegue quello che noi gli diciamo al suo interno
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.$store.dispatch('autoSignIn', user); //Passiamo l'utente solo in caso esista grazie all'if alla funzione che ci aggiornerrà anche la nostra variabilenel sito così da rispecchiare il localStorage
+        this.$store.dispatch('fetchUserData');
       }
     });
   },

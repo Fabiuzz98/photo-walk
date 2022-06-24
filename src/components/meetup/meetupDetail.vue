@@ -35,7 +35,10 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <register-dialog :meetupId="selectedMeetup.id" class="primary"
+            <register-dialog
+              v-if="userIsAuthenticated && !userIsCreator"
+              :meetupId="selectedMeetup.id"
+              class="primary"
               >Register</register-dialog
             >
           </v-card-actions>
@@ -64,7 +67,7 @@ export default {
       return this.$store.getters.loadedMeetup(this.id);
     },
 
-    isAuthenticated() {
+    userIsAuthenticated() {
       return (
         this.$store.getters.user !== null &&
         this.$store.getters.user !== undefined
