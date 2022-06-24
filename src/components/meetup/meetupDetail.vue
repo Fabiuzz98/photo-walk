@@ -20,12 +20,24 @@
               }}
             </div>
             <div>
+              <edit-meetup-date
+                v-if="userIsCreator"
+                :meetup="selectedMeetup"
+              ></edit-meetup-date>
+              <edit-meetup-time
+                v-if="userIsCreator"
+                :meetup="selectedMeetup"
+              ></edit-meetup-time>
+            </div>
+            <div>
               {{ selectedMeetup.description }}
             </div>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn class="primary">Register</v-btn>
+            <register-dialog :meetupId="selectedMeetup.id" class="primary"
+              >Register</register-dialog
+            >
           </v-card-actions>
         </v-card>
       </v-flex>
@@ -34,9 +46,18 @@
 </template>
 
 <script>
+import editMeetupDate from './edit/editMeetupDate.vue';
 import editMeetupDetails from './edit/editMeetupDetails.vue';
+import EditMeetupTime from './edit/editMeetupTime.vue';
+import registerDialog from './registration/registerDialog.vue';
+
 export default {
-  components: { editMeetupDetails },
+  components: {
+    editMeetupDetails,
+    editMeetupDate,
+    EditMeetupTime,
+    registerDialog,
+  },
   props: ['id'],
   computed: {
     selectedMeetup() {

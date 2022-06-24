@@ -63,6 +63,30 @@ export default new Vuex.Store({
       }
     },
 
+    registeredUserForMeetup(state, payload) {
+      const id = payload.id; //Sarebbe l'id del meetup passato da noi
+      state.user.registeredMeetups.push(id); //Aggiungiamo all'array di ogni user gli id dei meetup ai quali si registrano
+      state.user.fbKeys[id] = payload.fbKey; //Così si crea un oggetto chiamato 'fbKeys che per ogni suo elemento avrà come "key" l'id del meetup al quale ci siamo registrati e come "value" la key assegnatta da Firebase
+      console.log(state.user);
+      console.log(state.user.fbKeys);
+    },
+
+    unregisterUserForMeetups(state, meetupId) {
+      const registeredMeetups = state.user.registeredMeetups; //Prendiamo l'array di meetup al quale l'user è registrato
+
+      //Andiamo a cercare dentro l'array di meetups quello che corrisponde all'id del meetup passato da noi e lo togliamo con splice
+      registeredMeetups.splice(
+        registeredMeetups.findIndex(meetup => meetup.id === meetupId),
+        1
+      );
+
+      //Usiamo infine questo metodo che cerca dentro ad un oggetto una specifica key e la toglie compreso del contenuto
+      Reflect.deleteProperty(state.user.fbKeys, meetupId);
+
+      console.log(state.user.fbKeys);
+      console.log(state.user.registeredMeetups);
+    },
+
     setMeetups(state, payload) {
       state.loadedMeetups = payload;
     },
@@ -195,6 +219,48 @@ export default new Vuex.Store({
       }
     },
 
+    async registerUserForMeetup(context, meetupId) {
+      try {
+        //Essendo che il database salva i dati com eun array di oggetti, l'ultimo elemento che passiamo è però solo una stringa e quindi Firebase automaticamente
+        //assegna una key alla nostra stringa così che diventa un oggetto--> key(fbKey): value(Stringa ovvero l'id del meetup al quale ci si è registrati).
+        // data --> ci ritorna la key assegnata da Firebase per fare diventare il tutto un oggetto e si può accedere con 'data.key'
+        const data = await firebase
+          .database()
+          .ref('/users/' + context.getters.user.id)
+          .child('/registration/')
+          .push(meetupId);
+
+        context.commit('registeredUserForMeetup', {
+          id: meetupId,
+          fbKey: data.key, //Si riferisce alla key creata da firebase per il meetup
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    async unregisterUserFromMeetup(context, meetupId) {
+      try {
+        const user = context.getters.user;
+
+        //Se l'user attuale non ha un oggetto con Firebase key vuol dire che non può sregistrarsi perchè non è registrato a nulla
+        if (!user.fbKeys) return;
+
+        const fbKey = user.fbKeys[meetupId]; //Andiamo a cercare dentro l'oggetto 'fbKeys' quella key che corrisponde all'if del meetup passato da noi e ne prendiamo il value ovvero la key assegnata da Firebase (fbKey)
+
+        //Andiamo a cercare nel database la fbKey appena presa dall'oggetto e la rimuoviamo compreso del contenuto ovviamente
+        await firebase
+          .database()
+          .ref('/users/' + user.id + '/registration/')
+          .child(fbKey)
+          .remove();
+
+        context.commit('unregisterUserForMeetups', meetupId);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
     //Automaticamente, usando SDK al posto di REST API, il token ed i vari dati dell'utente vengono salvati nel local storage senza doverlo fare noi
     signUserUp(context, payload) {
       firebase
@@ -204,6 +270,7 @@ export default new Vuex.Store({
           const newUser = {
             id: user.uid,
             registeredMeetups: [],
+            fbKeys: {},
           };
           context.commit('setUser', newUser);
         })
@@ -223,6 +290,7 @@ export default new Vuex.Store({
         const newUser = {
           id: response.uid,
           registeredMeetups: [],
+          fbKeys: {},
         };
 
         context.commit('setUser', newUser);
@@ -243,7 +311,11 @@ export default new Vuex.Store({
     },
 
     autoSignIn(context, user) {
-      context.commit('setUser', { id: user.uid, registeredMeetups: [] }); //passiamo l'id dell'user che ci restituisce la funzione onAuthStateChange()
+      context.commit('setUser', {
+        id: user.uid,
+        fbKeys: {},
+        registeredMeetups: [],
+      }); //passiamo l'id dell'user che ci restituisce la funzione onAuthStateChange()
     },
 
     logout(context) {
