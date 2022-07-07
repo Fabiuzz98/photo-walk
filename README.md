@@ -2,7 +2,7 @@
 
 ...I am currently creating and working on this app...
 
-The app is to connect photographers by allowing users to create meetups around the world
+The app is to connect photographers by allowing them to create meetups around the world and modify them if they are the creator of the meetup, otherwise you can register and unregister to it and see the details of its time, place and description.
 
 ## Project setup
 
