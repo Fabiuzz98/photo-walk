@@ -82,6 +82,11 @@ export default {
       if (this.isLoggedIn) {
         menuItems = [
           {
+            name: 'View Meetups',
+            icon: 'mdi-account-supervisor',
+            link: '/all-meetups',
+          },
+          {
             name: 'Organize Meetup',
             icon: 'mdi-map-marker',
             link: '/create-meetup',

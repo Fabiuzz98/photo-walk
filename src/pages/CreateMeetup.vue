@@ -1,6 +1,12 @@
 <template>
   <v-card flat max-width="800" class="mx-auto mt-10 mb-10">
-    <v-form @submit.prevent="submit">
+    <modalDialog
+      :title="title"
+      :message="errorMsg"
+      v-if="err"
+      @close="closeModal"
+    ></modalDialog>
+    <v-form v-else @submit.prevent="submit">
       <v-container fluid>
         <v-row>
           <v-col cols="12" sm="6">
@@ -61,6 +67,8 @@ export default {
       file: [],
       date: '',
       time: '',
+      err: null,
+      errorMsg: '',
     };
   },
 
@@ -89,8 +97,13 @@ export default {
         await this.$store.dispatch('meetupModule/createMeetup', meetup);
         this.$router.replace('/');
       } catch (err) {
-        console.log(err);
+        this.err = true;
+        this.errorMsg = err;
       }
+    },
+
+    closeModal() {
+      this.err = false;
     },
   },
 

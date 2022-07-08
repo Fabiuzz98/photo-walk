@@ -3,7 +3,7 @@
     <div class="backdrop" @click="onModal"></div>
 
     <div class="dialog">
-      <h2 class="primary">{{ title }}</h2>
+      <h2 class="primary">{{ title ? title : 'Error' }}</h2>
       <div>
         <p>{{ message }}</p>
         <v-btn text class="primary" @click="onModal">Got it</v-btn>

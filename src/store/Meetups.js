@@ -106,7 +106,7 @@ export default {
           imageUrl: imageDBLink,
         });
       } catch (err) {
-        console.log(err);
+        throw new Error(err.message);
       }
     },
 

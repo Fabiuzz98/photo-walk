@@ -35,6 +35,18 @@ export default new Vuex.Store({
       }
     },
 
+    async signIn(context, payload) {
+      try {
+        const userCredentials = await firebase
+          .auth()
+          .signInWithEmailAndPassword(payload.email, payload.password);
+
+        console.log(userCredentials);
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+
     autoSignIn(context, user) {
       context.commit('setUser', user);
     },

@@ -1,46 +1,60 @@
 <template>
-  <v-card class="mx-auto mt-10 dsf" max-width="1000">
-    <spinner v-if="!hasLoaded"></spinner>
-    <v-img
-      class="white--text align-end"
-      height="350px"
-      :src="selectedMeetup.imageUrl"
-      v-else
-    >
-      <v-card-title>{{ selectedMeetup.title }}</v-card-title>
-    </v-img>
+  <v-container>
+    <spinner class="mt-10" v-if="!hasLoaded"></spinner>
+    <v-card v-else class="mx-auto mt-10 dsf" max-width="1000">
+      <v-img
+        class="white--text align-end"
+        height="350px"
+        :src="selectedMeetup.imageUrl"
+      >
+        <p class="font-weight-bold text-center text-h5 mb-n1 mx-auto title">
+          {{ selectedMeetup.title }}
+        </p>
+      </v-img>
 
-    <v-card-subtitle class="pb-0">
-      {{ selectedMeetup.date | dateFormatter }}
-    </v-card-subtitle>
+      <v-card-subtitle class="pb-0">
+        {{ selectedMeetup.date | dateFormatter }}
+      </v-card-subtitle>
 
-    <v-card-text class="text--primary">
-      <div>{{ selectedMeetup.description }}</div>
+      <v-card-text class="text--primary">
+        <div>{{ selectedMeetup.description }}</div>
 
-      <div></div>
-    </v-card-text>
+        <div></div>
+      </v-card-text>
 
-    <v-card-actions class="d-flex justify-space-between">
-      <div>
-        <v-btn color="primary " small text> Edit date </v-btn>
+      <v-card-actions class="d-flex justify-space-between">
+        <div class="edit">
+          <edit-time-dialog v-if="editTimeDialog"></edit-time-dialog>
+          <edit-date-dialog v-if="editDateDialog"></edit-date-dialog>
+        </div>
 
-        <v-btn color="primary" small text> edit time </v-btn>
-      </div>
-      <v-btn color="primary"> Register </v-btn>
-    </v-card-actions>
-  </v-card>
+        <v-btn color="primary"> Register </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-container>
 </template>
 
 <script>
 import spinner from '../UI/LoadingSpinner.vue';
+import editTimeDialog from '../UI/ModalEditTime.vue';
+import editDateDialog from '../UI/ModalEditDate.vue';
 export default {
-  components: { spinner },
+  components: { spinner, editTimeDialog, editDateDialog },
+  props: ['id'],
   data() {
     return {
       load: null,
+      editTimeDialog: true,
+      editDateDialog: true,
     };
   },
-  props: ['id'],
+
+  methods: {
+    editTime() {
+      this.editTimeDialog = true;
+    },
+  },
+
   computed: {
     hasLoaded() {
       const hasLoaded = this.$store.getters['meetupModule/hasLoaded'];
@@ -52,8 +66,6 @@ export default {
     },
 
     selectedMeetup() {
-      if (!this.hasLoaded) return;
-
       const meetups = this.$store.getters['meetupModule/meetups'];
       const theOne = meetups.find(meetup => {
         return meetup.id === this.id;
@@ -68,5 +80,14 @@ export default {
 <style scoped lang="scss">
 .dsf {
   z-index: 1;
+
+  .title {
+    background-color: rgba(0, 0, 0, 0.479);
+    padding: 1rem 0;
+  }
+
+  .edit {
+    display: flex;
+  }
 }
 </style>

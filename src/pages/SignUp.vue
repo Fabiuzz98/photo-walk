@@ -3,7 +3,7 @@
     <modalDialog
       :title="title"
       :message="errorMsg"
-      v-if="title"
+      v-if="err"
       @close="closeModal"
     ></modalDialog>
 
@@ -32,6 +32,7 @@ export default {
       validatePassword: '',
       title: '',
       errorMsg: '',
+      err: null,
     };
   },
 
@@ -49,9 +50,11 @@ export default {
   methods: {
     async signUp() {
       if (!this.email.includes('@')) {
+        this.err = true;
         this.title = 'Email Error';
         this.errorMsg = 'Please insert a valid email';
       } else if (!this.checkPsw) {
+        this.err = true;
         this.title = 'Password Error';
         this.errorMsg =
           'Please insert a password long at least 6 characters and equal passwords';
@@ -61,14 +64,16 @@ export default {
             email: this.email,
             password: this.password,
           });
+          this.$router.replace('/');
         } catch (err) {
-          console.log(err.message);
+          this.err = true;
+          this.errorMsg = err.message;
         }
       }
     },
 
     closeModal() {
-      this.title = '';
+      this.err = false;
     },
   },
 };
