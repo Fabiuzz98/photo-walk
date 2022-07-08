@@ -1,27 +1,29 @@
 <template>
-  <v-layout class="carousel-container" row wrap>
-    <v-flex xs12>
-      <spinner v-if="!hasLoaded"></spinner>
-      <v-carousel
-        v-else
-        xs12
-        cycle
-        height="500"
-        class="carousel"
-        hide-delimiter-background
-        show-arrows-on-hover
-      >
-        <v-carousel-item
-          class="mt-auto"
-          v-for="meetup in meetups"
-          :key="meetup.id"
-          :src="meetup.imageUrl"
+  <div>
+    <v-layout class="carousel-container" row wrap>
+      <v-flex xs12>
+        <spinner v-if="!hasLoaded"></spinner>
+        <v-carousel
+          v-else
+          xs12
+          cycle
+          height="500"
+          class="carousel"
+          hide-delimiter-background
+          show-arrows-on-hover
         >
-          <div class="meetup-name">{{ meetup.title }}</div>
-        </v-carousel-item>
-      </v-carousel>
-    </v-flex>
-  </v-layout>
+          <v-carousel-item
+            class="mt-auto"
+            v-for="meetup in meetups"
+            :key="meetup.id"
+            :src="meetup.imageUrl"
+          >
+            <div class="meetup-name">{{ meetup.title }}</div>
+          </v-carousel-item>
+        </v-carousel>
+      </v-flex>
+    </v-layout>
+  </div>
 </template>
 
 <script>

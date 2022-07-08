@@ -1,7 +1,7 @@
 <template>
   <v-card flat max-width="800" class="mx-auto mt-10 mb-10">
     <modalDialog
-      :title="title"
+      :title="titleDialog"
       :message="errorMsg"
       v-if="err"
       @close="closeModal"
