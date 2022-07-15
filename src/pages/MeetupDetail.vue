@@ -24,7 +24,10 @@
 
       <v-card-actions class="d-flex justify-space-between">
         <div class="edit">
-          <edit-time-dialog v-if="editTimeDialog"></edit-time-dialog>
+          <edit-time-dialog
+            :meetup="selectedMeetup"
+            v-if="editTimeDialog"
+          ></edit-time-dialog>
           <edit-date-dialog v-if="editDateDialog"></edit-date-dialog>
         </div>
 

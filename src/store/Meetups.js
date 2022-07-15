@@ -63,6 +63,12 @@ export default {
       state.meetups = payload;
       state.hasLoaded = true;
     },
+
+    updateMeetupDate(state, payload) {
+      const index = state.meetups.findIndex(meetup => meetup.id === payload.id);
+
+      state.meetups[index].date = payload.date;
+    },
   },
   actions: {
     async createMeetup(context, payload) {
@@ -133,6 +139,22 @@ export default {
         }
 
         context.commit('loadMeetups', meetupList);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    async updateMeetupsdate(context, payload) {
+      try {
+        const updatedDate = payload.date.toISOString();
+
+        await firebase
+          .database()
+          .ref('meetups')
+          .child(payload.id)
+          .update({ date: updatedDate });
+
+        context.commit('updateMeetupDate', payload);
       } catch (err) {
         console.log(err);
       }

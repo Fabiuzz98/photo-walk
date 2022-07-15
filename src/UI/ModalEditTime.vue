@@ -16,10 +16,18 @@
           class="time-editor mb-2"
           format="24hr"
           style="width: 100%"
+          v-model="time"
         ></v-time-picker>
 
         <v-card-actions>
-          <v-btn color="primary" text @click="dialog = false"> save </v-btn>
+          <v-btn
+            color="primary"
+            :disabled="!enableButton"
+            text
+            @click="editTime"
+          >
+            save
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -28,10 +36,40 @@
 
 <script>
 export default {
+  props: ['meetup'],
   data() {
     return {
       dialog: false,
+      time: '',
     };
+  },
+
+  methods: {
+    editTime() {
+      const date = new Date(this.meetup.date);
+      if (this.time.length < 0) return;
+
+      const hours = this.time.split(':')[0];
+      const minutes = this.time.split(':')[1];
+
+      date.setHours(hours);
+      date.setMinutes(minutes);
+
+      this.$store.dispatch('meetupModule/updateMeetupsdate', {
+        ...this.meetup,
+        date: date,
+      });
+      this.dialog = false;
+    },
+  },
+
+  computed: {
+    enableButton() {
+      if (this.time.length > 0) {
+        return true;
+      }
+      return false;
+    },
   },
 };
 </script>
