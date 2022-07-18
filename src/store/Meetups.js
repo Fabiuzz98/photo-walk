@@ -75,11 +75,14 @@ export default {
       try {
         console.log(payload);
 
+        const userId = context.rootState.user.userId;
+
         const meetup = {
           title: payload.title,
           location: payload.location,
           description: payload.description,
           date: payload.date.toISOString(),
+          creator: userId,
         };
 
         // const ImgExt = payload.image.name.split('.')[1];

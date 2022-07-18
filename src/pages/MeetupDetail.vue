@@ -23,15 +23,12 @@
       </v-card-text>
 
       <v-card-actions class="d-flex justify-space-between">
-        <div class="edit">
-          <edit-time-dialog
-            :meetup="selectedMeetup"
-            v-if="editTimeDialog"
-          ></edit-time-dialog>
-          <edit-date-dialog v-if="editDateDialog"></edit-date-dialog>
+        <div class="edit" v-if="showEditButtons">
+          <edit-time-dialog :meetup="selectedMeetup"></edit-time-dialog>
+          <edit-date-dialog :meetup="selectedMeetup"></edit-date-dialog>
         </div>
 
-        <v-btn color="primary"> Register </v-btn>
+        <v-btn color="primary" @click="register"> Register </v-btn>
       </v-card-actions>
     </v-card>
   </v-container>
@@ -47,15 +44,11 @@ export default {
   data() {
     return {
       load: null,
-      editTimeDialog: true,
-      editDateDialog: true,
     };
   },
 
   methods: {
-    editTime() {
-      this.editTimeDialog = true;
-    },
+    register() {},
   },
 
   computed: {
@@ -75,6 +68,22 @@ export default {
       });
 
       return theOne;
+    },
+
+    showEditButtons() {
+      const creatorId = this.selectedMeetup.creator;
+
+      const userId = this.$store.getters.userId;
+
+      console.log(creatorId, userId);
+
+      const isAuthenticated = this.$store.getters.isLoggedIn;
+
+      if (creatorId === userId && isAuthenticated) {
+        return true;
+      } else {
+        return false;
+      }
     },
   },
 };

@@ -42,6 +42,8 @@ export default new Vuex.Store({
           .signInWithEmailAndPassword(payload.email, payload.password);
 
         console.log(userCredentials);
+
+        context.commit('setUser', userCredentials);
       } catch (err) {
         throw new Error(err);
       }
@@ -59,6 +61,10 @@ export default new Vuex.Store({
   getters: {
     isLoggedIn(state) {
       return !!state.user.userId;
+    },
+
+    userId(state) {
+      return state.user.userId;
     },
   },
 });
