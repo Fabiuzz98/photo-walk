@@ -28,7 +28,9 @@
           <edit-date-dialog :meetup="selectedMeetup"></edit-date-dialog>
         </div>
 
-        <v-btn color="primary" @click="register"> Register </v-btn>
+        <v-btn color="primary" @click="register">
+          {{ isRegistered ? 'Unregister' : 'Register' }}
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-container>
@@ -48,7 +50,13 @@ export default {
   },
 
   methods: {
-    register() {},
+    register() {
+      if (!this.isRegistered) {
+        this.$store.dispatch('registerUserForMeetup', this.id);
+      } else {
+        this.$store.dispatch('unregisterUserForMeetup', this.id);
+      }
+    },
   },
 
   computed: {
@@ -75,8 +83,6 @@ export default {
 
       const userId = this.$store.getters.userId;
 
-      console.log(creatorId, userId);
-
       const isAuthenticated = this.$store.getters.isLoggedIn;
 
       if (creatorId === userId && isAuthenticated) {
@@ -84,6 +90,17 @@ export default {
       } else {
         return false;
       }
+    },
+
+    isRegistered() {
+      const registrations = this.$store.getters.registrations;
+
+      console.log(registrations);
+
+      const isRegistered = registrations.some(meetupId => meetupId === this.id);
+
+      console.log(isRegistered);
+      return isRegistered;
     },
   },
 };

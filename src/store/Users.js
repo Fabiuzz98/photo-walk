@@ -11,24 +11,46 @@ export default new Vuex.Store({
   modules: { meetupModule: meetups },
   state: {
     user: {},
+    fbKeyObj: {},
+    meetupsRegistrations: [],
   },
 
   mutations: {
     setUser(state, payload) {
       state.user = { userId: payload.uid };
-      console.log(state.user);
+    },
+
+    setUserRegistrations(state, payload) {
+      console.log(state, payload);
+
+      state.fbKeyObj = payload.fbKeyObj;
+
+      state.meetupsRegistrations = payload.registrationsArr;
+
+      console.log(state.fbKeyObj, state.meetupsRegistrations);
+    },
+
+    unregisterUser(state, meetupId) {
+      console.log(state.fbKeyObj[meetupId]);
+
+      const index = state.meetupsRegistrations.findIndex(
+        meetupId => meetupId === meetupId
+      );
+
+      state.meetupsRegistrations.splice(index, 1);
+
+      Reflect.deleteProperty(state.fbKeyObj, meetupId);
+
+      console.log(state.fbKeyObj[meetupId]);
     },
   },
   actions: {
     async signUp(context, payload) {
       try {
-        console.log(payload);
-
         const response = await firebase
           .auth()
           .createUserWithEmailAndPassword(payload.email, payload.password);
 
-        console.log(response.uid);
         context.commit('setUser', response);
       } catch (err) {
         throw new Error(err);
@@ -40,8 +62,6 @@ export default new Vuex.Store({
         const userCredentials = await firebase
           .auth()
           .signInWithEmailAndPassword(payload.email, payload.password);
-
-        console.log(userCredentials);
 
         context.commit('setUser', userCredentials);
       } catch (err) {
@@ -57,6 +77,57 @@ export default new Vuex.Store({
       context.commit('setUser', {});
       firebase.auth().signOut();
     },
+
+    async registerUserForMeetup(context, meetupId) {
+      try {
+        const userId = context.rootState.user.userId;
+
+        const response = await firebase
+          .database()
+          .ref(`/users/${userId}`)
+          .child('/registration/')
+          .push(meetupId);
+
+        const fbKey = response.key;
+
+        console.log(fbKey);
+
+        const registrations = [];
+        const meetupsPathToUnregister = {};
+
+        registrations.push(meetupId);
+
+        meetupsPathToUnregister[meetupId] = fbKey;
+
+        const obj = {
+          registrationsArr: registrations,
+          fbKeyObj: meetupsPathToUnregister,
+        };
+
+        context.commit('setUserRegistrations', obj);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    async unregisterUserForMeetup(context, meetupId) {
+      try {
+        const userId = context.rootState.user.userId;
+
+        const fbKey = context.rootState.fbKeyObj[meetupId];
+        console.log(fbKey);
+
+        firebase
+          .database()
+          .ref(`/users/${userId}/registration/`)
+          .child(fbKey)
+          .remove();
+
+        context.commit('unregisterUser', meetupId);
+      } catch (err) {
+        console.log(err);
+      }
+    },
   },
   getters: {
     isLoggedIn(state) {
@@ -65,6 +136,10 @@ export default new Vuex.Store({
 
     userId(state) {
       return state.user.userId;
+    },
+
+    registrations(state) {
+      return state.meetupsRegistrations;
     },
   },
 });

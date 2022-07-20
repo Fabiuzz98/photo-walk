@@ -135,6 +135,7 @@ export default {
             description: allMeetups[key].description,
             imageUrl: allMeetups[key].imageUrl,
             location: allMeetups[key].location,
+            creator: allMeetups[key].creator,
             id: key,
           };
 
