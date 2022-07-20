@@ -73,8 +73,6 @@ export default {
   actions: {
     async createMeetup(context, payload) {
       try {
-        console.log(payload);
-
         const userId = context.rootState.user.userId;
 
         const meetup = {
@@ -99,8 +97,6 @@ export default {
 
         const imageDBLink = storageResponse.metadata.downloadURLs[0];
 
-        console.log(imageDBLink);
-
         //prendere quello che ricevo dall'immagine (iil link di dove è salvata) ed inserirlo come vallue in image ed updatare il meetup nel db con il key value pair
         await firebase
           .database()
@@ -123,8 +119,6 @@ export default {
       try {
         const response = await firebase.database().ref('meetups').once('value');
         const allMeetups = response.val();
-
-        console.log(allMeetups);
 
         const meetupList = [];
 

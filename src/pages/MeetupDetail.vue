@@ -13,10 +13,11 @@
       </v-img>
 
       <v-card-subtitle class="pb-0">
-        {{ selectedMeetup.date | dateFormatter }}
+        {{ selectedMeetup.date | dateFormatter }} <br />
+        {{ selectedMeetup.location }}
       </v-card-subtitle>
 
-      <v-card-text class="text--primary">
+      <v-card-text class="text--primary mt-1 description">
         <div>{{ selectedMeetup.description }}</div>
 
         <div></div>
@@ -28,7 +29,11 @@
           <edit-date-dialog :meetup="selectedMeetup"></edit-date-dialog>
         </div>
 
-        <v-btn color="primary" @click="register">
+        <v-btn
+          v-if="!isCreator && isLoggedIn"
+          color="primary"
+          @click="register"
+        >
           {{ isRegistered ? 'Unregister' : 'Register' }}
         </v-btn>
       </v-card-actions>
@@ -60,6 +65,10 @@ export default {
   },
 
   computed: {
+    isLoggedIn() {
+      return this.$store.getters.isLoggedIn;
+    },
+
     hasLoaded() {
       const hasLoaded = this.$store.getters['meetupModule/hasLoaded'];
       if (!hasLoaded) {
@@ -92,14 +101,22 @@ export default {
       }
     },
 
+    isCreator() {
+      const creatorId = this.selectedMeetup.creator;
+      const userId = this.$store.getters.userId;
+
+      if (creatorId === userId) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
     isRegistered() {
       const registrations = this.$store.getters.registrations;
 
-      console.log(registrations);
-
       const isRegistered = registrations.some(meetupId => meetupId === this.id);
 
-      console.log(isRegistered);
       return isRegistered;
     },
   },
@@ -113,6 +130,12 @@ export default {
   .title {
     background-color: rgba(0, 0, 0, 0.479);
     padding: 1rem 0;
+    text-transform: capitalize;
+  }
+
+  .description {
+    font-weight: 400;
+    font-size: 1rem;
   }
 
   .edit {

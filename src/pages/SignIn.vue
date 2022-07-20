@@ -9,7 +9,12 @@
     <v-form v-else ref="form" lazy-validation>
       <v-text-field v-model="email" label="Email" required></v-text-field>
 
-      <v-text-field v-model="password" label="Password" required></v-text-field>
+      <v-text-field
+        v-model="password"
+        type="password"
+        label="Password"
+        required
+      ></v-text-field>
 
       <v-btn color="primary" class="mr-4" @click="signIn"> Sign in </v-btn>
     </v-form>

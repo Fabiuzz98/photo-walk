@@ -21,13 +21,9 @@ export default new Vuex.Store({
     },
 
     setUserRegistrations(state, payload) {
-      console.log(state, payload);
-
       state.fbKeyObj = payload.fbKeyObj;
 
       state.meetupsRegistrations = payload.registrationsArr;
-
-      console.log(state.fbKeyObj, state.meetupsRegistrations);
     },
 
     unregisterUser(state, meetupId) {
@@ -132,8 +128,6 @@ export default new Vuex.Store({
     async getUserDataAtLogin(context) {
       try {
         const userId = context.rootGetters.userId;
-
-        console.log(userId);
 
         const response = await firebase
           .database()

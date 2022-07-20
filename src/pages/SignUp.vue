@@ -10,11 +10,17 @@
     <v-form ref="form" class="form" lazy-validation>
       <v-text-field v-model="email" label="Email" required></v-text-field>
 
-      <v-text-field v-model="password" label="Password" required></v-text-field>
+      <v-text-field
+        v-model="password"
+        type="password"
+        label="Password"
+        required
+      ></v-text-field>
 
       <v-text-field
         v-model="validatePassword"
         label="Confirm Password"
+        type="password"
         required
       ></v-text-field>
 

@@ -92,7 +92,6 @@ export default {
           date: this.setTimeDate,
         };
 
-        console.log(meetup);
         //Chiamare metodo per inviare l'oggetto allo store in Meetups e fare poi il la fetch call al DB
         await this.$store.dispatch('meetupModule/createMeetup', meetup);
         this.$router.replace('/');
