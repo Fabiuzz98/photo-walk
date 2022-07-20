@@ -128,6 +128,38 @@ export default new Vuex.Store({
         console.log(err);
       }
     },
+
+    async getUserDataAtLogin(context) {
+      try {
+        const userId = context.rootGetters.userId;
+
+        console.log(userId);
+
+        const response = await firebase
+          .database()
+          .ref(`/users/${userId}/registration/`)
+          .once('value');
+
+        const data = response.val();
+
+        const registrations = [];
+        const meetupsPathToUnregister = {};
+
+        for (const key in data) {
+          registrations.push(data[key]);
+          meetupsPathToUnregister[data[key]] = key;
+        }
+
+        const obj = {
+          registrationsArr: registrations,
+          fbKeyObj: meetupsPathToUnregister,
+        };
+
+        context.commit('setUserRegistrations', obj);
+      } catch (err) {
+        console.log(err);
+      }
+    },
   },
   getters: {
     isLoggedIn(state) {
