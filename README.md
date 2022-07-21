@@ -3,8 +3,7 @@
 BUILT WITH: <br>
 This application is fully responsive and has been made with Vue-js, vuetify, vuex, vue-router, HTML, SCSS and Firebase for the backend.
 
-TRY THIS APP HERE: <br>
-...
+<br>
 
 DESCRIPTION OF THE APP: <br>
 This App was created for photographers that want to connect and have a day shoot together.<br>
